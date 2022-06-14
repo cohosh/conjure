@@ -6,7 +6,7 @@ DEBUG_OR_RELEASE = release
 RUST_LIB=./target/release/librust_dark_decoy.a
 TD_LIB=./libtapdance/libtapdance.a
 LIBS=${RUST_LIB} ${TD_LIB} -L/usr/local/lib -lpcap -lpfring -lzmq -lcrypto -lpthread -lrt -lgmp -ldl -lm
-CFLAGS = -Wall -DENABLE_BPF -DHAVE_PF_RING -DHAVE_PF_RING_ZC -DTAPDANCE_USE_PF_RING_ZERO_COPY -O2 # -g
+CFLAGS = -Wall -O2
 PROTO_RS_PATH=src/signalling.rs
 EXE_DIR=./bin
 
