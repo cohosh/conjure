@@ -6,7 +6,7 @@
 # be used. If this is blank then the environment variable CJ_PRIVKEY
 # which is defined in conjure.conf will be used (if that fails to parse
 # the station will shutdown).
-privkey_path = ""
+privkey_path = "/opt/conjure/sysconfig/privkey"
 
 # Log level, one of the following: info, error, warn, debug, trace
 log_level = "error"
@@ -61,9 +61,7 @@ ingest_worker_count = 100
 covert_blocklist_domains = ["localhost"]
 covert_blocklist_subnets = [
     "127.0.0.1/32",     # localhost ipv4
-    "10.0.0.0/8",       # reserved ipv4
     "172.16.0.0/12",    # reserved ipv4
-    "192.168.0.0/16",   # reserved ipv4
     "fc00::/7 ",        # private network ipv6
     "fe80::0/16",       # link local ipv6
     "::1/128",           # localhost ipv6
@@ -71,7 +69,7 @@ covert_blocklist_subnets = [
 
 # Automatically add all addresses and subnets associated with local devices to
 # the blocklist.
-covert_blocklist_public_addrs = true
+covert_blocklist_public_addrs = false
 
 # Override the blocklist providing a more restrictive allowlist. Any addresses
 # not explicitly included in an allowlisted subnet will be considered
@@ -128,7 +126,7 @@ heartbeat_timeout = 1000
 [[connect_sockets]]
 
 # Address of the socket to connect to
-address = "tcp://registration.refraction.network:5591"
+address = "tcp://127.0.0.1:5591"
 
 # Type of authenticaton method to use when connecting. Can be NULL for no
 # authentication or CURVE for public key-based authentication.
@@ -136,7 +134,7 @@ type = "CURVE"
 
 # Public key of socket to use if using CURVE authentication
 # The default value is the public key for the API hosted at registration.refraction.network
-pubkey = "s5gkB.U$dl]gO=F{Qo3=4Api-T$5#tpwaT/bSOr@"
+pubkey = "3Uc=IE>KE5Wmwg%*Z?1kM@o4J2A@Fjoia7KN41W*"
 
 # ZMQ subscription prefix for this socket. Leave as "" or omit to receive all messages
 subscription = ""
