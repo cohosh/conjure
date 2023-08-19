@@ -22,7 +22,7 @@ test:
 
 app:
 	[ -d $(EXE_DIR) ] || mkdir -p $(EXE_DIR)
-	go build -o ${EXE_DIR}/application ./cmd/application
+	go build -buildvcs=false -o ${EXE_DIR}/application ./cmd/application
 
 app-dbg:
 	[ -d $(EXE_DIR) ] || mkdir -p $(EXE_DIR)
@@ -42,7 +42,7 @@ conjure-sim: detect.c loadkey.c rust_util.c rust libtapdance
 
 registration-server:
 	[ -d $(EXE_DIR) ] || mkdir -p $(EXE_DIR)
-	go build -o ${EXE_DIR}/registration-server ./cmd/registration-server
+	go build -buildvcs=false -o ${EXE_DIR}/registration-server ./cmd/registration-server
 
 PARAMS := det app reg zbalance sim
 target := unk
