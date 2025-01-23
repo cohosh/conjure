@@ -9,7 +9,7 @@
 privkey_path = "/opt/conjure/sysconfig/privkey"
 
 # Same as privkey but used for zmq auth
-zmq_privkey_path = ""
+zmq_privkey_path = "/opt/conjure/sysconfig/privkey"
 
 # Log level, one of the following: info, error, warn, debug, trace
 log_level = "error"
