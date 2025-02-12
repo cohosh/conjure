@@ -8,6 +8,7 @@ package proto;
 
 import "google/protobuf/any.proto";
 
+
 enum KeyType {
     AES_GCM_128 = 90;
     AES_GCM_256 = 91; // not supported atm
@@ -88,6 +89,7 @@ message ClientConf {
     optional PhantomSubnetsList phantom_subnets_list = 4;
     optional PubKey conjure_pubkey = 5;
     optional DnsRegConf dns_reg_conf = 6;
+    optional AMPCacheConf amp_cache_conf = 7;
 }
 
 // Configuration for DNS registrar
@@ -104,6 +106,17 @@ enum DnsRegMethod {
     UDP = 1;
     DOT = 2;
     DOH = 3;
+}
+
+// Configuration for AMPCache registrar
+message AMPCacheConf {
+  //  required DnsRegMethod dns_reg_method = 1;
+    optional string target = 1;
+    required string domain = 2;
+    required string ampcacheurl = 3;
+    optional bytes pubkey = 4;
+    optional string utls_distribution = 5;
+    optional string stun_server = 6;
 }
 
 message DecoyList {
