@@ -456,6 +456,8 @@ const (
 	RegistrationSource_BidirectionalAPI RegistrationSource = 4
 	RegistrationSource_DNS              RegistrationSource = 5
 	RegistrationSource_BidirectionalDNS RegistrationSource = 6
+	RegistrationSource_AMPCache RegistrationSource = 7
+	RegistrationSource_BidirectionalAMPCache RegistrationSource = 8
 )
 
 // Enum value maps for RegistrationSource.
@@ -468,6 +470,8 @@ var (
 		4: "BidirectionalAPI",
 		5: "DNS",
 		6: "BidirectionalDNS",
+		7: "AMPCache",
+		8: "BidirectionalAMPCache",
 	}
 	RegistrationSource_value = map[string]int32{
 		"Unspecified":      0,
@@ -477,6 +481,8 @@ var (
 		"BidirectionalAPI": 4,
 		"DNS":              5,
 		"BidirectionalDNS": 6,
+		"AMPCache": 7,
+		"BidirectionalAMPCache": 8,
 	}
 )
 

@@ -334,6 +334,8 @@ enum RegistrationSource {
   BidirectionalAPI = 4;
   DNS = 5;
   BidirectionalDNS = 6;
+  AMPCache = 7;
+  BidirectionalAMP = 8;
 }
 
 message C2SWrapper {
@@ -433,6 +435,14 @@ message RegistrationResponse {
 
 // response from dns
 message DnsResponse {
+    optional bool success = 1;
+    optional bool clientconf_outdated = 2;
+    optional RegistrationResponse bidirectional_response = 3;
+}
+
+
+// response from ampcache
+message AmpCacheResponse {
     optional bool success = 1;
     optional bool clientconf_outdated = 2;
     optional RegistrationResponse bidirectional_response = 3;
