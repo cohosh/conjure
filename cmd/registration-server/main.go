@@ -38,6 +38,7 @@ type config struct {
 	Domain                    string   `toml:"domain"`
 	DNSPrivkeyPath            string   `toml:"dns_private_key_path"`
 	APIPort                   uint16   `toml:"api_port"`
+	AMPCacheURL               string   `toml:"ampcache_url"`
 	ZMQAuthVerbose            bool     `toml:"zmq_auth_verbose"`
 	ZMQAuthType               string   `toml:"zmq_auth_type"`
 	ZMQPort                   uint16   `toml:"zmq_port"`
@@ -219,7 +220,7 @@ func main() {
 
 	regServers := []regServer{}
 	var dnsRegServer *dnsregserver.DNSRegServer
-	var ampCacheRegServer *ampCacheRegServer
+	var ampCacheRegServer *ampCacheregserver.AMPCacheRegServer
 	var apiRegServer *apiregserver.APIRegServer
 
 	if !apiOnly && !ampCacheOnly {
@@ -245,7 +246,7 @@ func main() {
 		regServers = append(regServers, apiRegServer)
 	}
 	if !dnsOnly && !apiOnly {
-		ampCacheRegServer, err = ampCacheregserver.NewAMPCacheRegServer(conf.AmpCacheURL, processor, conf.latestClientConf, log.WithField("registrar", "AMPCache"), metrics)
+		ampCacheRegServer, err = ampCacheregserver.NewAMPCacheRegServer(conf.APIPort, conf.AMPCacheURL, processor, conf.latestClientConf, log.WithField("registrar", "AMPCache"), logClientIP, metrics)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -281,7 +282,7 @@ func main() {
 						dnsRegServer.UpdateLatestCCGen(conf.latestClientConf.GetGeneration())
 					}
 					if ampCacheRegServer != nil {
-						ampCacheRegServer.UpdateLatestCCGen(conf.latestClientConf.GetGeneration())
+						ampCacheRegServer.NewClientConf(conf.latestClientConf)
 					}
 				}
 			}

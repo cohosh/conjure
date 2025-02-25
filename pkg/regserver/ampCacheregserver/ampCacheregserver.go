@@ -26,6 +26,7 @@ type registrar interface {
 
 type AMPCacheRegServer struct {
 	apiPort          uint16
+	ampCacheURL      string
 	latestClientConf *pb.ClientConf // Latest clientConf for sharing over RegistrationResponse channel.
 	ccMutex          sync.RWMutex
 	processor        registrar
@@ -321,11 +322,12 @@ func (s *AMPCacheRegServer) ListenAndServe() error {
 	return err
 }
 
-func NewAMPCacheRegServer(apiPort uint16, regprocessor *regprocessor.RegProcessor, latestCC *pb.ClientConf, logger log.FieldLogger, logClientIP bool, metrics *metrics.Metrics) (*AMPCacheRegServer, error) {
+func NewAMPCacheRegServer(apiPort uint16, ampCacheURL string, regprocessor *regprocessor.RegProcessor, latestCC *pb.ClientConf, logger log.FieldLogger, logClientIP bool, metrics *metrics.Metrics) (*AMPCacheRegServer, error) {
 	if regprocessor == nil || latestCC == nil || logger == nil {
 		return nil, errors.New("arguments cannot be nil")
 	}
 	return &AMPCacheRegServer{
+		ampCacheURL:      ampCacheURL,
 		apiPort:          apiPort,
 		processor:        regprocessor,
 		latestClientConf: latestCC,
