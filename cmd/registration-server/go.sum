@@ -33,6 +33,10 @@ github.com/libp2p/go-reuseport v0.4.0 h1:nR5KU7hD0WxXCJbmw7r2rhRYruNRl2koHw8fQsc
 github.com/libp2p/go-reuseport v0.4.0/go.mod h1:ZtI03j/wO5hZVDFo2jKywN6bYKWLOy8Se6DrI2E1cLU=
 github.com/mroth/weightedrand v1.0.0 h1:V8JeHChvl2MP1sAoXq4brElOcza+jxLkRuwvtQu8L3E=
 github.com/mroth/weightedrand v1.0.0/go.mod h1:3p2SIcC8al1YMzGhAIoXD+r9olo/g/cdJgAD905gyNE=
+github.com/onyiny-ang/conjure v0.0.0-20250219211302-52628537c347 h1:ROud4C7J0NbAFfUrUrA5ooXQSt17bN13uJcIKrJRIVE=
+github.com/onyiny-ang/conjure v0.0.0-20250219211302-52628537c347/go.mod h1:VlWbygACmfWRqAIzngX2mGr+vGYpb72ca28gjq9Mk1s=
+github.com/onyiny-ang/conjure v0.0.0-20250225192542-3ee3fae5c47d h1:WtsmDzQXL+ecx9a/as/53EulIY0s4FCyhAmQTBGa+94=
+github.com/onyiny-ang/conjure v0.0.0-20250225192542-3ee3fae5c47d/go.mod h1:VlWbygACmfWRqAIzngX2mGr+vGYpb72ca28gjq9Mk1s=
 github.com/oschwald/geoip2-golang v1.11.0 h1:hNENhCn1Uyzhf9PTmquXENiWS6AlxAEnBII6r8krA3w=
 github.com/oschwald/geoip2-golang v1.11.0/go.mod h1:P9zG+54KPEFOliZ29i7SeYZ/GM6tfEL+rgSn03hYuUo=
 github.com/oschwald/maxminddb-golang v1.13.0 h1:R8xBorY71s84yO06NgTmQvqvTvlS/bnYZrrWX1MElnU=

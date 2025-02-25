@@ -1,8 +1,8 @@
 module github.com/refraction-networking/conjure/cmd/regserver
 
-go 1.21
+go 1.22.0
 
-toolchain go1.22.1
+toolchain go1.23.6
 
 require (
 	github.com/BurntSushi/toml v1.4.0
@@ -42,3 +42,5 @@ require (
 	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 )
+
+replace github.com/refraction-networking/conjure v0.7.10 => github.com/onyiny-ang/conjure v0.0.0-20250225192542-3ee3fae5c47d
