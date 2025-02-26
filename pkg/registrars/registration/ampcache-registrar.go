@@ -139,14 +139,14 @@ func (r AMPCacheRegistrar) executeAMPCacheRequestBidirectional(ctx context.Conte
 		logger.Warnf("failed to parse endpoint url")
 	}
 	reqURL := endpointURL.ResolveReference(&url.URL{
-		Path: "amp/register-bidirectional/" + amp.EncodePath(payload),
+		Path: amp.EncodePath(payload),
 	})
 
 	// Rewrite reqURL to its AMP cache version.
-	reqURL, err = amp.CacheURL(reqURL, r.ampCacheURL, "c")
-	if err != nil {
-		return nil, err
-	}
+	//	reqURL, err = amp.CacheURL(reqURL, r.ampCacheURL, "c")
+	//	if err != nil {
+	//		return nil, err
+	//	}
 
 	req, err := http.NewRequest("GET", reqURL.String(), nil)
 	if err != nil {
