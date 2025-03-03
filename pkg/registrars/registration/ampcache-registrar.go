@@ -1,6 +1,7 @@
 package registration
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -47,7 +48,7 @@ func NewAMPCacheRegistrar(config *Config) (*AMPCacheRegistrar, error) {
 			return nil, err
 		}
 	} else {
-		return nil, err
+		return nil, fmt.Errorf("AMPCacheURL not set")
 	}
 
 	ip, err := getPublicIp(config.STUNAddr)
@@ -133,28 +134,31 @@ func (r AMPCacheRegistrar) executeAMPCacheRequestBidirectional(ctx context.Conte
 	logger.Println("Registering via AMP cache rendezvous...")
 	logger.Println("Station URL:", r.endpoint)
 	logger.Println("AMP cache URL:", r.ampCacheURL)
-
-	endpointURL, err := url.Parse(r.endpoint)
-	if err != nil {
-		logger.Warnf("failed to parse endpoint url")
-	}
-	reqURL := endpointURL.ResolveReference(&url.URL{
-		Path: amp.EncodePath(payload),
-	})
-
+	/*
+		endpointURL, err := url.Parse(r.endpoint)
+		if err != nil {
+			logger.Warnf("failed to parse endpoint url")
+		}
+		reqURL := endpointURL.ResolveReference(&url.URL{
+			Path: amp.EncodePath(payload),
+		})
+	*/
 	// Rewrite reqURL to its AMP cache version.
 	//	reqURL, err = amp.CacheURL(reqURL, r.ampCacheURL, "c")
 	//	if err != nil {
 	//		return nil, err
 	//	}
 
-	req, err := http.NewRequest("GET", reqURL.String(), nil)
+	//	req, err := http.NewRequest("GET", reqURL.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, "POST", r.endpoint, bytes.NewReader(payload))
+	logger.Println("Did POST: %v", req)
 	if err != nil {
 		logger.Warnf("%v failed to create HTTP request to registration endpoint %s: %v", r.endpoint, err)
 		return regResp, err
 	}
 
 	resp, err := r.client.Do(req)
+	logger.Println("Did Do: %v", resp)
 	if err != nil {
 		logger.Warnf("%v failed to do HTTP request to registration endpoint %s: %v", r.endpoint, err)
 		return regResp, err
@@ -165,7 +169,7 @@ func (r AMPCacheRegistrar) executeAMPCacheRequestBidirectional(ctx context.Conte
 
 	// Check that the HTTP request returned a success code
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		// logger.Warnf("got non-success response code %d from registration endpoint %v", resp.StatusCode, r.endpoint)
+		logger.Warnf("got non-success response code %d from registration endpoint %v", resp.StatusCode, r.endpoint)
 		return regResp, fmt.Errorf("non-success response code %d on %s", resp.StatusCode, r.endpoint)
 	}
 
@@ -203,6 +207,7 @@ func (r AMPCacheRegistrar) executeAMPCacheRequestBidirectional(ctx context.Conte
 
 // Register prepares and sends the registration request.
 func (r *AMPCacheRegistrar) Register(cjSession *tapdance.ConjureSession, ctx context.Context) (*tapdance.ConjureReg, error) {
+
 	defer lib.SleepWithContext(ctx, r.connectionDelay)
 
 	//	if r.bidirectional {
