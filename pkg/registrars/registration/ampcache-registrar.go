@@ -154,12 +154,13 @@ func (r AMPCacheRegistrar) executeAMPCacheRequestBidirectional(ctx context.Conte
 		logger.Warnf("%v failed to create HTTP request to registration endpoint %s: %v", r.endpoint, err)
 		return regResp, err
 	}
-
+	logger.Printf("Request: %v", req)
 	resp, err := r.client.Do(req)
 	if err != nil {
 		logger.Warnf("%v failed to do HTTP request to registration endpoint %s: %v", r.endpoint, err)
 		return regResp, err
 	}
+	logger.Printf("Response: %v", resp)
 	defer resp.Body.Close()
 
 	logger.Printf("AMP cache rendezvous response: %s", resp.Status)
