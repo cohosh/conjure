@@ -9,6 +9,9 @@ LIBS=${RUST_LIB} ${TD_LIB} -L/usr/local/lib -lpcap -lpfring -lzmq -lcrypto -lpth
 CFLAGS = -Wall -O2
 PROTO_RS_PATH=src/signalling.rs
 EXE_DIR=./bin
+LANG=en_US.UTF-8
+SHELL=/bin/bash
+.SHELLFLAGS=--norc --noprofile -e -u -o pipefail -c
 
 all: rust libtd conjure app registration-server ${PROTO_RS_PATH}
 
@@ -22,11 +25,11 @@ test:
 
 app:
 	[ -d $(EXE_DIR) ] || mkdir -p $(EXE_DIR)
-	go build -buildvcs=false -o ${EXE_DIR}/application ./cmd/application
+	go build  -buildvcs=false -o ${EXE_DIR}/application ./cmd/application 
 
 app-dbg:
 	[ -d $(EXE_DIR) ] || mkdir -p $(EXE_DIR)
-	go build -tags debug -o ${EXE_DIR}/application ./cmd/application
+	go build  -tags debug -o ${EXE_DIR}/application ./cmd/application 
 
 libtd:
 	cd ./libtapdance/ && make libtapdance.a
