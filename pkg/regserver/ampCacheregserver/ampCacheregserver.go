@@ -105,7 +105,7 @@ func getRemoteAddr(r *http.Request) net.IP {
 
 func (s *AMPCacheRegServer) getC2SFromReq(w http.ResponseWriter, r *http.Request) (*pb.C2SWrapper, error) {
 	const MinimumRequestLength = regprocessor.SecretLength + 1 // shared_secret + VSP
-	if r.Method != "POST" {
+	if r.Method != "GET" {
 		s.logger.Errorf("rejecting request due to incorrect method %s\n", r.Method)
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil, errors.New("incorrect method")
@@ -182,17 +182,14 @@ func (s *AMPCacheRegServer) register(w http.ResponseWriter, r *http.Request) {
 func (s *AMPCacheRegServer) registerBidirectional(w http.ResponseWriter, r *http.Request) {
 	s.metrics.Add("bdampcache_requests_total", 1)
 
-	// figure out IP from STUN since this likely doesn't work
-	clientAddr := getRemoteAddr(r)
-	if clientAddr == nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	// Use STUN address from payload since this likely doesn't work
+	//	clientAddr := getRemoteAddr(r)
+	//	if clientAddr == nil {
+	//		w.WriteHeader(http.StatusBadRequest)
+	//		return
+	//	}
 
 	logFields := log.Fields{"http_method": r.Method, "content_length": r.ContentLength, "registration_type": "bidirectional"}
-	if s.logClientIP {
-		logFields["ip_address"] = clientAddr.String()
-	}
 	reqLogger := s.logger.WithFields(logFields)
 
 	reqLogger.Debugf("received new request")
@@ -202,12 +199,12 @@ func (s *AMPCacheRegServer) registerBidirectional(w http.ResponseWriter, r *http
 		return
 	}
 
-	reqLogger = reqLogger.WithField("reg_id", hex.EncodeToString(payload.GetSharedSecret()))
+	clientAddr := payload.RegistrationAddress
 
-	var clientAddrBytes = make([]byte, 16)
-	if clientAddr != nil {
-		clientAddrBytes = []byte(clientAddr.To16())
+	if s.logClientIP {
+		logFields["ip_address"] = string(clientAddr)
 	}
+	reqLogger = reqLogger.WithField("reg_id", hex.EncodeToString(payload.GetSharedSecret()))
 
 	// Check server's client config -- add server's ClientConf if client is outdated
 	serverClientConf := s.compareClientConfGen(payload.GetRegistrationPayload().GetDecoyListGeneration())
@@ -217,7 +214,7 @@ func (s *AMPCacheRegServer) registerBidirectional(w http.ResponseWriter, r *http
 	}
 
 	// Create registration response object
-	regResp, err := s.processor.RegisterBidirectional(payload, pb.RegistrationSource_BidirectionalAMP, clientAddrBytes)
+	regResp, err := s.processor.RegisterBidirectional(payload, pb.RegistrationSource_BidirectionalAMP, clientAddr)
 
 	if err != nil {
 		switch err {

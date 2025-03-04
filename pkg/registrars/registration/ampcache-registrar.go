@@ -134,31 +134,28 @@ func (r AMPCacheRegistrar) executeAMPCacheRequestBidirectional(ctx context.Conte
 	logger.Println("Registering via AMP cache rendezvous...")
 	logger.Println("Station URL:", r.endpoint)
 	logger.Println("AMP cache URL:", r.ampCacheURL)
-	/*
-		endpointURL, err := url.Parse(r.endpoint)
-		if err != nil {
-			logger.Warnf("failed to parse endpoint url")
-		}
-		reqURL := endpointURL.ResolveReference(&url.URL{
-			Path: amp.EncodePath(payload),
-		})
-	*/
+
+	endpointURL, err := url.Parse(r.endpoint)
+	if err != nil {
+		logger.Warnf("failed to parse endpoint url")
+	}
+	reqURL := endpointURL.ResolveReference(&url.URL{
+		Path: amp.EncodePath(payload),
+	})
+
 	// Rewrite reqURL to its AMP cache version.
 	//	reqURL, err = amp.CacheURL(reqURL, r.ampCacheURL, "c")
 	//	if err != nil {
 	//		return nil, err
 	//	}
 
-	//	req, err := http.NewRequest("GET", reqURL.String(), nil)
-	req, err := http.NewRequestWithContext(ctx, "POST", r.endpoint, bytes.NewReader(payload))
-	logger.Println("Did POST: %v", req)
+	req, err := http.NewRequestWithContext(ctx, "GET", reqURL.String(), bytes.NewReader(payload))
 	if err != nil {
 		logger.Warnf("%v failed to create HTTP request to registration endpoint %s: %v", r.endpoint, err)
 		return regResp, err
 	}
 
 	resp, err := r.client.Do(req)
-	logger.Println("Did Do: %v", resp)
 	if err != nil {
 		logger.Warnf("%v failed to do HTTP request to registration endpoint %s: %v", r.endpoint, err)
 		return regResp, err
