@@ -26,7 +26,7 @@ const (
 type AMPCacheRegistrar struct {
 	// endpoint to use in registration request
 	endpoint    string
-	ampCacheURL *url.URL
+	ampCacheURL string
 	// HTTP client to use in request
 	client           *http.Client
 	utlsDistribution string
@@ -40,14 +40,8 @@ type AMPCacheRegistrar struct {
 
 func NewAMPCacheRegistrar(config *Config) (*AMPCacheRegistrar, error) {
 
-	var cacheURL *url.URL
 	var err error
-	if config.AMPCacheURL != "" {
-		cacheURL, err = url.Parse(config.AMPCacheURL)
-		if err != nil {
-			return nil, err
-		}
-	} else {
+	if config.AMPCacheURL == "" {
 		return nil, fmt.Errorf("AMPCacheURL not set")
 	}
 
@@ -59,7 +53,7 @@ func NewAMPCacheRegistrar(config *Config) (*AMPCacheRegistrar, error) {
 	return &AMPCacheRegistrar{
 		endpoint:         config.Target,
 		client:           config.HTTPClient,
-		ampCacheURL:      cacheURL,
+		ampCacheURL:      config.AMPCacheURL,
 		ip:               ip,
 		utlsDistribution: config.UTLSDistribution,
 		maxRetries:       config.MaxRetries,
