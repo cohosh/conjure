@@ -4,7 +4,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"io"
 	"net"
 	"net/http"
 	"strings"
@@ -16,6 +15,7 @@ import (
 	"github.com/refraction-networking/conjure/pkg/regserver/regprocessor"
 	pb "github.com/refraction-networking/conjure/proto"
 	log "github.com/sirupsen/logrus"
+	"gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/v2/common/amp"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -117,21 +117,35 @@ func (s *AMPCacheRegServer) getC2SFromReq(w http.ResponseWriter, r *http.Request
 		return nil, errors.New("payload too small")
 	}
 
-	in, err := io.ReadAll(r.Body)
+	// path prefix, so this function unfortunately needs to be aware of and
+	// remove its own routing prefix.
+	//TODO: should be neutral to registration type
+	path := strings.TrimPrefix(r.URL.Path, "/amp/register-bidirectional/")
+	if path == r.URL.Path {
+		// The path didn't start with the expected prefix. This probably
+		// indicates an internal bug.
+		log.Println("ampC2SFromReq: unexpected prefix in path")
+		w.WriteHeader(http.StatusInternalServerError)
+		return nil, errors.New("Unexpected prefix in path")
+	}
+
+	var encRegistrationReq []byte
+	var err error
+	encRegistrationReq, err = amp.DecodePath(path)
 	if err != nil {
 		s.logger.Errorf("failed to read request body:", err)
 		http.Error(w, "Failed to read request body", http.StatusBadRequest)
 		return nil, errors.New("failed to read request body")
 	}
-
 	payload := &pb.C2SWrapper{}
-	if err = proto.Unmarshal(in, payload); err != nil {
+	if err = proto.Unmarshal(encRegistrationReq, payload); err != nil {
 		s.logger.Errorf("failed to decode protobuf body:", err)
 		http.Error(w, "Failed to decode protobuf body", http.StatusBadRequest)
 		return nil, errors.New("failed to decode protobuf body")
 	}
 
 	return payload, nil
+
 }
 
 func (s *AMPCacheRegServer) register(w http.ResponseWriter, r *http.Request) {
@@ -182,13 +196,6 @@ func (s *AMPCacheRegServer) register(w http.ResponseWriter, r *http.Request) {
 func (s *AMPCacheRegServer) registerBidirectional(w http.ResponseWriter, r *http.Request) {
 	s.metrics.Add("bdampcache_requests_total", 1)
 
-	// Use STUN address from payload since this likely doesn't work
-	//	clientAddr := getRemoteAddr(r)
-	//	if clientAddr == nil {
-	//		w.WriteHeader(http.StatusBadRequest)
-	//		return
-	//	}
-
 	logFields := log.Fields{"http_method": r.Method, "content_length": r.ContentLength, "registration_type": "bidirectional"}
 	reqLogger := s.logger.WithFields(logFields)
 
@@ -196,6 +203,7 @@ func (s *AMPCacheRegServer) registerBidirectional(w http.ResponseWriter, r *http
 
 	payload, err := s.getC2SFromReq(w, r)
 	if err != nil {
+		s.logger.Printf("Error with getC2SFromReq %v", err)
 		return
 	}
 
@@ -238,6 +246,12 @@ func (s *AMPCacheRegServer) registerBidirectional(w http.ResponseWriter, r *http
 		regResp.ClientConf = serverClientConf
 	}
 
+	w.Header().Set("Content-Type", "text/html")
+	// Attempt to hint to an AMP cache not to waste resources caching this
+	// document. "The Google AMP Cache considers any document fresh for at
+	// least 15 seconds."
+	// https://developers.google.com/amp/cache/overview#google-amp-cache-updates
+	w.Header().Set("Cache-Control", "max-age=15")
 	// Add header to w (server response)
 	w.WriteHeader(http.StatusOK)
 	// Marshal (serialize) registration response object and then write it to w
@@ -251,6 +265,17 @@ func (s *AMPCacheRegServer) registerBidirectional(w http.ResponseWriter, r *http
 	if err != nil {
 		reqLogger.Errorf("failed to write registration into response: %v", err)
 		return
+	}
+
+	enc, err := amp.NewArmorEncoder(w)
+	if err != nil {
+		log.Printf("amp.NewArmorEncoder: %v", err)
+		return
+	}
+	defer enc.Close()
+
+	if _, err := enc.Write(body); err != nil {
+		log.Printf("ampClientOffers: unable to write answer: %v", err)
 	}
 
 	reqLogger.Debugf("registration successful")
@@ -310,12 +335,13 @@ func (s *AMPCacheRegServer) NewClientConf(c *pb.ClientConf) {
 
 func (s *AMPCacheRegServer) ListenAndServe() error {
 	r := mux.NewRouter()
-	t := r.PathPrefix("/amp").Subrouter()
-	t.HandleFunc("/register", s.register)
-	t.HandleFunc("/register-bidirectional", s.registerBidirectional)
-	http.Handle("/amp", r)
+	r.PathPrefix("/amp/register/").HandlerFunc(s.register)
+	r.PathPrefix("/amp/register-bidirectional/").HandlerFunc(s.registerBidirectional)
+	http.Handle("/amp/", r)
 
-	err := http.ListenAndServe(fmt.Sprintf(":%d", 8001), nil)
+	log.Println("AMP cache reg server started")
+
+	err := http.ListenAndServe(fmt.Sprintf(":%d", s.apiPort), nil)
 
 	return err
 }
