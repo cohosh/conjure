@@ -91,7 +91,7 @@ func (r *AMPCacheRegistrar) registerBidirectional(ctx context.Context, cjSession
 		regResp, err := r.executeAMPCacheRequestBidirectional(ctx, payload, logger)
 
 		if err != nil {
-			logger.Warnf("error in sending request to AMPCache registrar: %v", err)
+			logger.Warnf("error sending request to AMPCache registrar: %v", err)
 			continue
 		}
 
@@ -177,22 +177,23 @@ func (r AMPCacheRegistrar) executeAMPCacheRequestBidirectional(ctx context.Conte
 	}
 
 	lr := io.LimitReader(resp.Body, readLimit+1)
+	logger.Printf(("Returned lr: %v", lr)
 	dec, err := amp.NewArmorDecoder(lr)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Armor Decoder failed with error: %d", err)
 	}
 	bodyBytes, err := io.ReadAll(dec)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("ReadAll failed with error: %d", err)
 	}
 	if lr.(*io.LimitedReader).N == 0 {
 		// We hit readLimit while decoding AMP armor, that's an error.
-		return nil, io.ErrUnexpectedEOF
+		return nil, fmt.Errorf("Hit readLimit while decoding AMP armor: %d", io.ErrUnexpectedEOF)
 	}
 	// Unmarshal response body into Registration Response protobuf
 	if err = proto.Unmarshal(bodyBytes, regResp); err != nil {
-		logger.Warnf("error in storing Registration Response protobuf: %v", err)
-		return regResp, err
+
+		return regResp, fmt.Errorf("Error in storing Registration Response protobuf: %v", err)
 	}
 	return regResp, nil
 }
