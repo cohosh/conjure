@@ -310,12 +310,11 @@ func (s *AMPCacheRegServer) NewClientConf(c *pb.ClientConf) {
 
 func (s *AMPCacheRegServer) ListenAndServe() error {
 	r := mux.NewRouter()
-	t := r.PathPrefix("/amp").Subrouter()
-	t.HandleFunc("/register", s.register)
-	t.HandleFunc("/register-bidirectional", s.registerBidirectional)
-	http.Handle("/amp", r)
+	r.PathPrefix("/amp/register/").HandlerFunc(s.register)
+	r.PathPrefix("/amp/register-bidirectional/").HandlerFunc(s.registerBidirectional)
+	http.Handle("/amp/", r)
 
-	err := http.ListenAndServe(fmt.Sprintf(":%d", 8001), nil)
+	err := http.ListenAndServe(fmt.Sprintf(":%d", s.apiPort), nil)
 
 	return err
 }

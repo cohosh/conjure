@@ -134,7 +134,7 @@ func (r AMPCacheRegistrar) executeAMPCacheRequestBidirectional(ctx context.Conte
 		logger.Warnf("failed to parse endpoint url")
 	}
 	reqURL := endpointURL.ResolveReference(&url.URL{
-		Path: amp.EncodePath(payload),
+		Path: endpointURL.Path + "/" + amp.EncodePath(payload),
 	})
 
 	// Rewrite reqURL to its AMP cache version.
