@@ -110,13 +110,9 @@ enum DnsRegMethod {
 
 // Configuration for AMPCache registrar
 message AMPCacheConf {
-  //  required DnsRegMethod dns_reg_method = 1;
-    optional string target = 1;
-    required string domain = 2;
-    required string ampcacheurl = 3;
-    optional bytes pubkey = 4;
-    optional string utls_distribution = 5;
-    optional string stun_server = 6;
+    required string ampcacheurl = 1;
+    optional string utls_distribution = 2;
+    required string stun_server = 3;
 }
 
 message DecoyList {
@@ -448,14 +444,6 @@ message RegistrationResponse {
 
 // response from dns
 message DnsResponse {
-    optional bool success = 1;
-    optional bool clientconf_outdated = 2;
-    optional RegistrationResponse bidirectional_response = 3;
-}
-
-
-// response from ampcache
-message AmpCacheResponse {
     optional bool success = 1;
     optional bool clientconf_outdated = 2;
     optional RegistrationResponse bidirectional_response = 3;
