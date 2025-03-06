@@ -208,6 +208,7 @@ func (s *AMPCacheRegServer) registerBidirectional(w http.ResponseWriter, r *http
 	}
 
 	clientAddr := payload.RegistrationAddress
+	log.Printf("Reg IP: %s", string(clientAddr))
 
 	if s.logClientIP {
 		logFields["ip_address"] = string(clientAddr)
