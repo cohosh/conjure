@@ -115,11 +115,19 @@ func initAssets(path string) error {
 	defaultDnsRegUtlsDistribution := "3*Firefox_65,1*Firefox_63,1*iOS_12_1"
 	defaultDnsRegMethod := pb.DnsRegMethod_DOH
 
+	defaultAMPCacheUrl := "https://cdn.ampproject.org/"
+
 	defaultDnsRegConf := pb.DnsRegConf{
 		DnsRegMethod:     &defaultDnsRegMethod,
 		Target:           &defaultDnsRegDohUrl,
 		Domain:           &defaultDnsRegDomain,
 		Pubkey:           defaultDnsRegPubkey,
+		UtlsDistribution: &defaultDnsRegUtlsDistribution,
+		StunServer:       &defaultStunServer,
+	}
+
+	defaultAMPCacheConf := pb.AMPCacheConf{
+		Ampcacheurl:      &defaultAMPCacheUrl,
 		UtlsDistribution: &defaultDnsRegUtlsDistribution,
 		StunServer:       &defaultStunServer,
 	}
@@ -130,6 +138,7 @@ func initAssets(path string) error {
 		ConjurePubkey: &defaultConjurePubKey,
 		Generation:    &defaultGeneration,
 		DnsRegConf:    &defaultDnsRegConf,
+		AMPCacheConf:  &defaultAMPCacheConf,
 	}
 
 	assetsInstance = &assets{

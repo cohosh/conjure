@@ -72,6 +72,7 @@ func (r *AMPCacheRegistrar) registerBidirectional(ctx context.Context, cjSession
 		logger.Errorf("Failed to prepare registration data: %v", err)
 		return nil, lib.ErrRegFailed
 	}
+	logger.Printf("IP address %s", string(r.ip))
 
 	protoPayload.RegistrationAddress = r.ip
 
@@ -177,7 +178,7 @@ func (r AMPCacheRegistrar) executeAMPCacheRequestBidirectional(ctx context.Conte
 	}
 
 	lr := io.LimitReader(resp.Body, readLimit+1)
-	logger.Printf(("Returned lr: %v", lr)
+	logger.Printf("Returned lr: %v", lr)
 	dec, err := amp.NewArmorDecoder(lr)
 	if err != nil {
 		return nil, fmt.Errorf("Armor Decoder failed with error: %d", err)
