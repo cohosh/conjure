@@ -138,7 +138,7 @@ func initAssets(path string) error {
 		ConjurePubkey: &defaultConjurePubKey,
 		Generation:    &defaultGeneration,
 		DnsRegConf:    &defaultDnsRegConf,
-		AMPCacheConf:  &defaultAMPCacheConf,
+		AmpCacheConf:  &defaultAMPCacheConf,
 	}
 
 	assetsInstance = &assets{
