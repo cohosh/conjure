@@ -447,4 +447,12 @@ message DnsResponse {
     optional bool success = 1;
     optional bool clientconf_outdated = 2;
     optional RegistrationResponse bidirectional_response = 3;
+
+}
+
+// response from ampcache
+message AmpCacheResponse {
+    optional bool success = 1;
+    optional bool clientconf_outdated = 2;
+    optional RegistrationResponse bidirectional_response = 3;
 }
