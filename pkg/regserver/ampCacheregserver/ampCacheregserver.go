@@ -208,10 +208,10 @@ func (s *AMPCacheRegServer) registerBidirectional(w http.ResponseWriter, r *http
 	}
 
 	clientAddr := payload.RegistrationAddress
-	log.Printf("Reg IP: %s", string(clientAddr))
+	log.Printf("Reg IP: %s", net.IP(clientAddr))
 
 	if s.logClientIP {
-		logFields["ip_address"] = string(clientAddr)
+		logFields["ip_address"] = net.IP(clientAddr).String()
 	}
 	reqLogger = reqLogger.WithField("reg_id", hex.EncodeToString(payload.GetSharedSecret()))
 
@@ -221,9 +221,10 @@ func (s *AMPCacheRegServer) registerBidirectional(w http.ResponseWriter, r *http
 		// Replace the payload generation with correct generation from server's client config
 		payload.RegistrationPayload.DecoyListGeneration = serverClientConf.Generation
 	}
-
+	var clientAddrBytes = make([]byte, 16)
+	clientAddrBytes = []byte(net.IP(clientAddr).To16())
 	// Create registration response object
-	regResp, err := s.processor.RegisterBidirectional(payload, pb.RegistrationSource_BidirectionalAMP, clientAddr)
+	regResp, err := s.processor.RegisterBidirectional(payload, pb.RegistrationSource_BidirectionalAMP, clientAddrBytes)
 
 	if err != nil {
 		switch err {

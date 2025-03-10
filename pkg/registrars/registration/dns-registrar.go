@@ -227,6 +227,8 @@ func getPublicIp(server string) ([]byte, error) {
 		err = errors.New("Failed to get IP address from STUN: " + err.Error())
 	}
 
+	fmt.Printf("Checking the Correct Return: %s\n", ip.To4())
+
 	return ip.To4(), nil
 }
 

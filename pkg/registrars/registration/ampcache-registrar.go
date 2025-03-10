@@ -46,6 +46,7 @@ func NewAMPCacheRegistrar(config *Config) (*AMPCacheRegistrar, error) {
 	}
 
 	ip, err := getPublicIp(config.STUNAddr)
+	fmt.Printf("IP from getPublicIP: %s\n", ip)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get public IP: %v", err)
 	}
@@ -178,7 +179,7 @@ func (r AMPCacheRegistrar) executeAMPCacheRequestBidirectional(ctx context.Conte
 	}
 
 	lr := io.LimitReader(resp.Body, readLimit+1)
-	logger.Printf("Returned lr: %v", lr)
+	logger.Printf("Returned lr: %s", lr)
 	dec, err := amp.NewArmorDecoder(lr)
 	if err != nil {
 		return nil, fmt.Errorf("Armor Decoder failed with error: %d", err)
