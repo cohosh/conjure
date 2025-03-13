@@ -47,8 +47,8 @@ func NewAMPCacheRegistrar(config *Config) (*AMPCacheRegistrar, error) {
 	}
 
 	ip, err := getPublicIp(config.STUNAddr)
-	ip = net.IP("192.168.2.3").To4()
-	tapdance.Logger().WithField("registrar", "AMPCache").Printf("IP from getPublicIP: %s\n", ip)
+	ip = net.ParseIP("192.168.2.3").To4()
+	tapdance.Logger().WithField("registrar", "AMPCache").Printf("IP from getPublicIP: %s\n", net.IP(ip))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get public IP: %v", err)
 	}
