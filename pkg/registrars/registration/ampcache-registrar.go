@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -46,7 +47,8 @@ func NewAMPCacheRegistrar(config *Config) (*AMPCacheRegistrar, error) {
 	}
 
 	ip, err := getPublicIp(config.STUNAddr)
-	fmt.Printf("IP from getPublicIP: %s\n", ip)
+	ip = net.IP("192.168.2.3").To4()
+	tapdance.Logger().WithField("registrar", "AMPCache").Printf("IP from getPublicIP: %s\n", ip)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get public IP: %v", err)
 	}
@@ -73,7 +75,7 @@ func (r *AMPCacheRegistrar) registerBidirectional(ctx context.Context, cjSession
 		logger.Errorf("Failed to prepare registration data: %v", err)
 		return nil, lib.ErrRegFailed
 	}
-	logger.Printf("IP address %s", string(r.ip))
+	logger.Printf("IP address %s", net.IP(r.ip))
 
 	protoPayload.RegistrationAddress = r.ip
 

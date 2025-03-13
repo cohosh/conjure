@@ -263,6 +263,7 @@ impl SessionTracker {
 
     pub fn is_tracked_session<T: Taggable>(&self, flow: &T) -> bool {
         let key = flow.tag();
+        print!("checking for key {:?}\n", key);
         self.session_exists(&key)
     }
 
@@ -322,6 +323,7 @@ impl SessionTracker {
     fn insert_session(&mut self, session: SessionDetails) {
         // is this already in the map?
         let key = session.tag();
+        print!("inserting key {:?}\n", key);
         if self.session_exists(&key) {
             self.try_update_session_timeout(&key, session.timeout);
             return;

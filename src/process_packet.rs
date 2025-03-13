@@ -166,6 +166,7 @@ impl PerCoreGlobal {
     fn check_for_tagged_flow(&mut self, flow: &Flow, ip_pkt: &IpPacket) -> Option<()> {
         let cj_flow = FlowNoSrcPort::from_flow(flow);
         if self.flow_tracker.is_phantom_session(&cj_flow) {
+            print!("found phantom session!\n");
             // Handle packet destined for registered IP
             match self.filter_station_traffic(flow.src_ip.to_string()) {
                 // traffic was sent by another station, likely liveness testing.
